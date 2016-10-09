@@ -1,0 +1,28 @@
+Package: caret.ts
+Type: Package
+Title: Time series models for "caret" package
+Version: 0.1-0
+Date: 2016-10-09
+Authors@R: c(person("Stefan", "Feuerriegel", email="stefan.feuerriegel@is.uni-freiburg.de",
+                    role=c("aut", "cre")))
+Author: Stefan Feuerriegel [aut, cre]
+Maintainer: Stefan Feuerriegel <stefan.feuerriegel@is.uni-freiburg.de>
+Description: The "caret" package is common in various tasks related to machine learning; 
+    however, it does yet ship dedicated time series models. This implementation thus
+	extends the "caret" package and offers additional models, including ARMA or ARIMA. 
+	Additionally, it customizes the "train" function to accept time series data.
+License: MIT + file LICENSE
+URL: https://github.com/sfeuerriegel/caret.ts
+BugReports: https://github.com/sfeuerriegel/caret.ts/issues
+Depends: 
+    R (>= 2.10)
+Imports: 
+    caret,
+    forecast
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown
+LazyData: true
+RoxygenNote: 5.0.1
+VignetteBuilder: knitr
