@@ -19,10 +19,10 @@
 #' lm <- train(y ~ 1, data = df, method = "lm", trControl = trainDirectFit())
 #' summary(lm)
 #' 
-#' arima <- train(y ~ 1, data = df, method = arima_model, trControl = trainDirectFit())
+#' arima <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
 #' summary(arima)
 #' @export
 trainDirectFit <- function(...) {
-  return(caret::trainControl(method = "none", repeats = 1, ...))
+  return(caret::trainControl(method = "none", number = 1, repeats = 1, ...))
 }
 
