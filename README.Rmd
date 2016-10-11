@@ -63,13 +63,13 @@ The examples below how to insert the models inside the `train()` function from *
 
 Auto-regressive moving-average (ARMA) models can be faciliated both with and without exogeneous variables. By using `arma_model(p, q)`, one can construct an ARMA model of a fixed, pre-defined order. Alternatively, one can let the `train()` function pick the order that fits the training data best. For the latter purpose, use `auto_arma_model()` (with optional arguments for the maximum order).
 
-Example without exogenous variables:
+**Example without exogenous variables:**
 
 ```{r}
 
 ```
 
-Example with exogenous variables:
+**Example with exogenous variables:**
 
 ```{r}
 
@@ -89,7 +89,7 @@ Auto-regressive moving-average models with differneces (ARIMA) also support exog
 
 Alternatively, one can let the `train()` function pick the order that fits the training data best. For the latter purpose, use `auto_arima_model()` (with optional arguments for the maximum order).
 
-Example without exogenous variables:
+**Example without exogenous variables:**
 
 ```{r, warning=FALSE, message=FALSE}
 library(forecast)
@@ -128,13 +128,37 @@ predict(auto_arima, df) # in-sample predictions
 RMSE(predict(auto_arima, df), df) # in-sample RMSE
 ```
 
-Example with exogenous variables:
+**Example with exogenous variables:**
 
-```{r}
+```{r warning=FALSE, message=FALSE}
+library(vars)
+data(Canada)
 
+arima <- train(x = Canada[, -2], y = Canada[, 2], 
+               method = auto_arima_model(), trControl = trainDirectFit())
+
+summary(arima)
+arimaorder(arima$finalModel) # order of best model
+
+predict(arima, Canada[, -2]) # in-sample predictions
+RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
 ```
 
 Predictions and testing:
+
+### Variable importance
+
+Variable importance metrics as provided by **caret** are supported accordingly. 
+
+**Example:**
+
+```{r varimp}
+absCoef <- varImp(arima, scale = FALSE) # variable importance (= absolute value of coefficient)
+absCoef
+
+plot(absCoef)
+```
+
 
 ### Alternative interface for training with time series objects
 
@@ -142,7 +166,7 @@ Predictions and testing:
 
 This package automatically extends the `train()` function to successfully work with time series objects of class `ts`.
 
-Example with uni-variate time series:
+**Example with uni-variate time series:**
 
 ```{r}
 class(WWWusage)
@@ -159,12 +183,9 @@ predict(arima, WWWusage) # in-sample RMSE
 RMSE(predict(arima, WWWusage), WWWusage) # in-sample RMSE
 ```
 
-Example for time series with exogenous predictors:
+**Example for time series with exogenous predictors:**
 
-```{r warning=FALSE, message=FALSE}
-library(vars)
-data(Canada)
-
+```{r}
 class(Canada)
 str(Canada)
 

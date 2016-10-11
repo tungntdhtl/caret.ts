@@ -53,9 +53,9 @@ The examples below how to insert the models inside the `train()` function from *
 
 Auto-regressive moving-average (ARMA) models can be faciliated both with and without exogeneous variables. By using `arma_model(p, q)`, one can construct an ARMA model of a fixed, pre-defined order. Alternatively, one can let the `train()` function pick the order that fits the training data best. For the latter purpose, use `auto_arma_model()` (with optional arguments for the maximum order).
 
-Example without exogenous variables:
+**Example without exogenous variables:**
 
-Example with exogenous variables:
+**Example with exogenous variables:**
 
 Predictions and testing:
 
@@ -71,7 +71,7 @@ Auto-regressive moving-average models with differneces (ARIMA) also support exog
 
 Alternatively, one can let the `train()` function pick the order that fits the training data best. For the latter purpose, use `auto_arima_model()` (with optional arguments for the maximum order).
 
-Example without exogenous variables:
+**Example without exogenous variables:**
 
 ``` r
 library(forecast)
@@ -207,9 +207,74 @@ RMSE(predict(auto_arima, df), df) # in-sample RMSE
 #> [1] 89.18835
 ```
 
-Example with exogenous variables:
+**Example with exogenous variables:**
+
+``` r
+library(vars)
+data(Canada)
+
+arima <- train(x = Canada[, -2], y = Canada[, 2], 
+               method = auto_arima_model(), trControl = trainDirectFit())
+
+summary(arima)
+#> Series: y 
+#> ARIMA(2,0,0) with zero mean     
+#> 
+#> Coefficients:
+#>          ar1      ar2       e       rw       U
+#>       1.2102  -0.2763  0.4457  -0.0342  0.2776
+#> s.e.  0.1171   0.1165  0.0169   0.0368  0.2215
+#> 
+#> sigma^2 estimated as 0.4888:  log likelihood=-87.78
+#> AIC=187.55   AICc=188.64   BIC=202.14
+#> 
+#> Training set error measures:
+#>                       ME      RMSE       MAE          MPE      MAPE
+#> Training set -0.02979641 0.6780177 0.5476467 -0.007691884 0.1344207
+#>                   MASE       ACF1
+#> Training set 0.9362673 -0.0183326
+arimaorder(arima$finalModel) # order of best model
+#> [1] 2 0 0
+
+predict(arima, Canada[, -2]) # in-sample predictions
+#>  [1] 405.4994 405.2832 405.1572 405.3035 405.6309 405.7105 405.6267
+#>  [8] 405.3987 404.8970 404.5051 404.1713 403.9424 404.0222 404.4012
+#> [15] 404.8099 404.7607 404.7411 404.9772 405.2785 405.3657 405.4211
+#> [22] 405.7300 406.0010 406.2976 406.5486 406.7743 406.8578 406.9458
+#> [29] 407.1422 407.5242 407.8000 408.1256 408.3616 408.4886 408.6087
+#> [36] 408.8549 409.2059 409.1863 409.2402 409.4167 409.6208 409.6419
+#> [43] 409.6497 409.4363 409.1360 409.1769 409.1870 409.0469 408.8650
+#> [50] 408.8673 408.9322 409.0498 409.0528 409.2108 409.3261 409.4018
+#> [57] 409.3560 409.6302 409.9219 410.1296 410.3348 410.2382 410.2827
+#> [64] 410.3412 410.5295 410.5687 410.6198 410.6881 410.9932 411.3019
+#> [71] 411.6466 411.8066 411.9024 412.1303 412.4689 412.7548 412.9641
+#> [78] 413.2387 413.4124 413.5871 413.8916 414.0445 414.1947 414.5188
+RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
+#> [1] 2.297104
+```
 
 Predictions and testing:
+
+### Variable importance
+
+Variable importance metrics as provided by **caret** are supported accordingly.
+
+**Example:**
+
+``` r
+absCoef <- varImp(arima, scale = FALSE) # variable importance (= absolute value of coefficient)
+absCoef
+#> custom variable importance
+#> 
+#>    Overall
+#> e   0.4457
+#> U   0.2776
+#> rw  0.0342
+
+plot(absCoef)
+```
+
+![](README-varimp-1.png)
 
 ### Alternative interface for training with time series objects
 
@@ -217,7 +282,7 @@ Predictions and testing:
 
 This package automatically extends the `train()` function to successfully work with time series objects of class `ts`.
 
-Example with uni-variate time series:
+**Example with uni-variate time series:**
 
 ``` r
 class(WWWusage)
@@ -269,12 +334,9 @@ RMSE(predict(arima, WWWusage), WWWusage) # in-sample RMSE
 #> [1] 89.18835
 ```
 
-Example for time series with exogenous predictors:
+**Example for time series with exogenous predictors:**
 
 ``` r
-library(vars)
-data(Canada)
-
 class(Canada)
 #> [1] "mts" "ts"
 str(Canada)
