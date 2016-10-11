@@ -57,6 +57,19 @@ arima_sort <- function(x) {
   return(x)
 }
 
+arima_varimp <- function(object, ...) {
+  values <- abs(object$coef[object$xNames])
+
+  out <- data.frame(values)
+  colnames(out) <- "Overall"
+  
+  if (!is.null(names(values))) {
+    rownames(out) <- names(values)
+  }
+  
+  return(out) 
+}
+
 #' ARIMA model with fixed order
 #' 
 #' Creates an AIRMA model that is then fitted to the data as a univariate time series.
@@ -71,19 +84,41 @@ arima_sort <- function(x) {
 #' @return Model definition that can then be insered into \code{\link[caret]{train}}.
 #' @note If one desires an auto-tuning of the best order, then one needs to switch to 
 #' \code{\link{auto_arima_model}}.
+#' @details Variable importance metrics return the absolute value of the coefficients
+#' for the exogenous variables (if any).
 #' @examples 
-#' data(WWWusage) # from package "forecast"
-#' df <- data.frame(y = as.numeric(WWWusage))
-#' 
 #' library(caret)
 #' 
 #' # without exogenous variables
+#' 
+#' library(forecast)
+#' data(WWWusage) # from package "forecast"
+#' df <- data.frame(y = as.numeric(WWWusage))
 #' 
 #' lm <- train(y ~ 1, data = df, method = "lm", trControl = trainDirectFit())
 #' summary(lm)
 #' 
 #' arima <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
 #' summary(arima)
+#' 
+#' # with exogenous variables
+#' 
+#' library(vars)
+#' data(Canada)
+#' 
+#' arima <- train(x = Canada[, -2], y = Canada[, 2], 
+#'                method = arima_model(2, 0, 0), trControl = trainDirectFit())
+#' 
+#' summary(arima)
+#' arimaorder(arima$finalModel) # order of best model
+#' 
+#' predict(arima, Canada[, -2]) # in-sample predictions
+#' RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
+#' 
+#' absCoef <- varImp(arima, scale = FALSE) # variable importance (= absolute value of coefficient)
+#' absCoef
+#' 
+#' plot(absCoef)
 #' @export
 arima_model <- function(p, d, q, intercept = TRUE, ...) {
   return(list(label = "ARIMA",
@@ -115,13 +150,16 @@ arima_model <- function(p, d, q, intercept = TRUE, ...) {
 #' @param ... Further arguments used when fitting ARIMA model.
 #' @note If one desires an ARIMA model of fixed, pre-defined order, then one needs to 
 #' switch to \code{\link{auto_arima_model}}.
+#' @details Variable importance metrics return the absolute value of the coefficients
+#' for the exogenous variables (if any).
 #' @examples 
-#' data(WWWusage) # from package "forecast"
-#' df <- data.frame(y = as.numeric(WWWusage))
-#' 
 #' library(caret)
 #' 
 #' # without exogenous variables
+#' 
+#' library(forecast)
+#' data(WWWusage) # from package "forecast"
+#' df <- data.frame(y = as.numeric(WWWusage))
 #' 
 #' lm <- train(y ~ 1, data = df, method = "lm", trControl = trainDirectFit())
 #' summary(lm)
@@ -130,6 +168,25 @@ arima_model <- function(p, d, q, intercept = TRUE, ...) {
 #' arima <- train(y ~ 1, data = df, method = auto_arima_model(), trControl = trainDirectFit())
 #' summary(arima)
 #' RMSE(predict(arima, df), df)
+#' 
+#' # with exogenous variables
+#' 
+#' library(vars)
+#' data(Canada)
+#' 
+#' arima <- train(x = Canada[, -2], y = Canada[, 2], 
+#'                method = auto_arima_model(), trControl = trainDirectFit())
+#' 
+#' summary(arima)
+#' arimaorder(arima$finalModel) # order of best model
+#' 
+#' predict(arima, Canada[, -2]) # in-sample predictions
+#' RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
+#' 
+#' absCoef <- varImp(arima, scale = FALSE) # variable importance (= absolute value of coefficient)
+#' absCoef
+#' 
+#' plot(absCoef)
 #' @export
 auto_arima_model <- function(p = 5, d = 2, q = 5, intercept = TRUE, ...) {
   return(list(label = "ARIMA",
@@ -141,7 +198,8 @@ auto_arima_model <- function(p = 5, d = 2, q = 5, intercept = TRUE, ...) {
               grid = arima_grid(p, d, q, intercept),
               fit = auto_arima_fit(...),
               predict = arima_predict,
-              sort = arima_sort))
+              sort = arima_sort,
+              varImp = arima_varimp))
 }
 
 

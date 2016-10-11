@@ -29,17 +29,22 @@ Creates an AIRMA model that is then fitted to the data as a univariate time seri
 If further variables are specified in the model, it also includess exogenous variables. 
 The order (p, d, q) is tuned by choosing the one with best fit.
 }
+\details{
+Variable importance metrics return the absolute value of the coefficients
+for the exogenous variables (if any).
+}
 \note{
 If one desires an ARIMA model of fixed, pre-defined order, then one needs to 
 switch to \code{\link{auto_arima_model}}.
 }
 \examples{
-data(WWWusage) # from package "forecast"
-df <- data.frame(y = as.numeric(WWWusage))
-
 library(caret)
 
 # without exogenous variables
+
+library(forecast)
+data(WWWusage) # from package "forecast"
+df <- data.frame(y = as.numeric(WWWusage))
 
 lm <- train(y ~ 1, data = df, method = "lm", trControl = trainDirectFit())
 summary(lm)
@@ -48,5 +53,24 @@ RMSE(predict(lm, df), df)
 arima <- train(y ~ 1, data = df, method = auto_arima_model(), trControl = trainDirectFit())
 summary(arima)
 RMSE(predict(arima, df), df)
+
+# with exogenous variables
+
+library(vars)
+data(Canada)
+
+arima <- train(x = Canada[, -2], y = Canada[, 2], 
+               method = auto_arima_model(), trControl = trainDirectFit())
+
+summary(arima)
+arimaorder(arima$finalModel) # order of best model
+
+predict(arima, Canada[, -2]) # in-sample predictions
+RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
+
+absCoef <- varImp(arima, scale = FALSE) # variable importance (= absolute value of coefficient)
+absCoef
+
+plot(absCoef)
 }
 
