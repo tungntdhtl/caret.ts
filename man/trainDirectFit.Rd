@@ -30,8 +30,10 @@ library(caret)
 
 lm <- train(y ~ 1, data = df, method = "lm", trControl = trainDirectFit())
 summary(lm)
+RMSE(predict(lm, df), df)
 
 arima <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
 summary(arima)
+RMSE(predict(arima, df), df)
 }
 
