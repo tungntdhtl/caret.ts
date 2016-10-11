@@ -20,7 +20,9 @@ Creates an exponential smoothing state space (ETS) model that is then fitted to 
 data as a univariate time series.
 }
 \note{
-ETS model does not support exogenous variables.
+ETS model does not support exogenous variables. Yet, we need to supply some 
+sample data when making predictions in order to work with caret. However, these 
+values are ignored.
 }
 \examples{
 library(caret)

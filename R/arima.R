@@ -20,9 +20,9 @@ arima_fit <- function(...) {
     }
     
     if (ncol(x) == 0) {
-      m <- forecast::Arima(x = y, order = c(param$p, param$d, param$q), ...)    
+      m <- forecast::Arima(y = y, order = c(param$p, param$d, param$q), ...)    
     } else {
-      m <- forecast::Arima(x = y, xreg = x, order = c(param$p, param$d, param$q), ...)
+      m <- forecast::Arima(y = y, xreg = x, order = c(param$p, param$d, param$q), ...)
     }
   
     return(m)
@@ -33,9 +33,9 @@ auto_arima_fit <- function(...) {
   return(function(x, y, wts, param, lev, last, weights, classProbs) {
     # cat("ARIMA\n")
     if (ncol(x) == 0) {
-      m <- forecast::auto.arima(x = y, max.p = param$p, max.d = param$d, max.q = param$q, start.p = 0, start.q = 0, seasonal = FALSE, ...)    
+      m <- forecast::auto.arima(y = y, max.p = param$p, max.d = param$d, max.q = param$q, start.p = 0, start.q = 0, seasonal = FALSE, ...)    
     } else {
-      m <- forecast::auto.arima(x = y, xreg = x, max.p = param$p, max.d = param$d, max.q = param$q, start.p = 0, start.q = 0, seasonal = FALSE, ...)
+      m <- forecast::auto.arima(y = y, xreg = x, max.p = param$p, max.d = param$d, max.q = param$q, start.p = 0, start.q = 0, seasonal = FALSE, ...)
     }
   
     return(m)

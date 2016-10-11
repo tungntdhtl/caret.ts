@@ -12,9 +12,15 @@ Overview
 
 The most important functions in **caret.ts** are:
 
--   TODO.
+-   `train()` inside **caret** now works with time series object (i.e. those of class `ts`).
 
-To see examples of these functions in use, check out the help pages, the demos and the vignette.
+-   `arma_model()` and `arima_model()` construct a time series model of a pre-defined order to be used inside `train()`.
+
+-   `auto_arma_model()` and `auto_arima_model()` find the order that fits the training data best.
+
+-   `ets_model()` implements an ETS model, optionally with auto-search for the best model specification.
+
+To see examples of these functions in use, check out the help pages or the examples in this README file.
 
 Installation
 ------------
@@ -343,29 +349,13 @@ RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
 
 ### ETS
 
-`ets_model()` integrates a so-called exponential smoothing state space (ETS) model.
+`ets_model()` integrates a so-called exponential smoothing state space (ETS) model. Note that the ETS model does not contain any exogenous predictors; however, we need to supply some sample data to work with **caret**, but which is ignored.
 
 ``` r
 data_train <- WWWusage[1:80]
 data_test <- WWWusage[81:100]
  
 lm <- train(data_train, method = "lm", trControl = trainDirectFit())
-summary(lm)
-#> 
-#> Call:
-#> lm(formula = .outcome ~ ., data = dat)
-#> 
-#> Residuals:
-#>    Min     1Q Median     3Q    Max 
-#> -41.80 -33.80   6.20  23.45  50.20 
-#> 
-#> Coefficients:
-#>             Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  124.800      3.491   35.75   <2e-16 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 31.23 on 79 degrees of freedom
 RMSE(predict(lm, data_test), data_test)
 #> [1] 69.44221
  
@@ -388,7 +378,7 @@ summary(ets)
 #>   sigma:  3.4236
 #> 
 #>      AIC     AICc      BIC 
-#> 557.4736 558.2844 569.3837 
+#> 559.4736 560.6243 573.7658 
 #> 
 #> Training set error measures:
 #>                     ME     RMSE      MAE       MPE     MAPE      MASE
@@ -607,6 +597,10 @@ plot(absCoef)
 ```
 
 ![](README-varimp-1.png)
+
+### Time series cross-validation
+
+**TODO**
 
 License
 -------

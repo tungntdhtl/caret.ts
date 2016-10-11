@@ -24,10 +24,15 @@ knitr::opts_chunk$set(
 
 The most important functions in **caret.ts** are:
 
-* TODO. 
+* `train()` inside **caret** now works with time series object (i.e. those of class `ts`).
 
-To see examples of these functions in use, check out the help pages, the demos and the vignette. 
+* `arma_model()` and `arima_model()` construct a time series model of a pre-defined order to be used inside `train()`.
 
+* `auto_arma_model()` and `auto_arima_model()` find the order that fits the training data best. 
+
+* `ets_model()` implements an ETS model, optionally with auto-search for the best model specification.
+
+To see examples of these functions in use, check out the help pages or the examples in this README file. 
 
 ## Installation
 
@@ -275,6 +280,10 @@ absCoef
 
 plot(absCoef)
 ```
+
+### Time series cross-validation
+
+**TODO**
 
 ## License
 
