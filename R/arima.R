@@ -7,14 +7,18 @@ arima_parameters <- function() {
 
 arima_grid <- function(p = 5, d = 5, q = 5, intercept = TRUE) {
   return(function(x, y, len = NULL, search = "grid") {
-    out <- data.frame(p = p, d = d, q = q, intercept = intercept)
+    out <- data.frame(p = p, d = d, q = q, intercept = intercept,
+                      stringsAsFactors = FALSE)
     return(out)
   })
 }
 
 arima_fit <- function(...) {
   return(function(x, y, wts, param, lev, last, weights, classProbs) {
-    # cat("ARIMA\n")
+    if (is.null(y)) {
+      y <- x
+    }
+    
     if (ncol(x) == 0) {
       m <- forecast::Arima(x = y, order = c(param$p, param$d, param$q), ...)    
     } else {
@@ -75,7 +79,7 @@ arima_varimp <- function(object, ...) {
 
 #' ARIMA model with fixed order
 #' 
-#' Creates an AIRMA model that is then fitted to the data as a univariate time series.
+#' Creates an ARIMA model that is then fitted to the data as a univariate time series.
 #' If further variables are specified in the model, it also includess exogenous variables. 
 #' The order (p, d, q) is fixed as specified. 
 #' @param p Order of auto-regressive (AR) terms.
@@ -132,7 +136,8 @@ arima_model <- function(p, d, q, intercept = TRUE, ...) {
               grid = arima_grid(p, d, q, intercept),
               fit = arima_fit(...),
               predict = arima_predict,
-              sort = arima_sort))
+              sort = arima_sort,
+              varImp = arima_varimp))
 }
 
 #' ARIMA model with tuned order

@@ -22,7 +22,7 @@ arima_model(p, d, q, intercept = TRUE, ...)
 Model definition that can then be insered into \code{\link[caret]{train}}.
 }
 \description{
-Creates an AIRMA model that is then fitted to the data as a univariate time series.
+Creates an ARIMA model that is then fitted to the data as a univariate time series.
 If further variables are specified in the model, it also includess exogenous variables. 
 The order (p, d, q) is fixed as specified.
 }

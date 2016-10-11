@@ -7,7 +7,8 @@ arma_parameters <- function() {
 
 arma_grid <- function(p = 5, q = 5, intercept = TRUE) {
   return(function(x, y, len = NULL, search = "grid") {
-    out <- data.frame(p = p, q = q, intercept = intercept)
+    out <- data.frame(p = p, q = q, intercept = intercept,
+                      stringsAsFactors = FALSE)
     return(out)
   })
 }
