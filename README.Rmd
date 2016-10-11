@@ -57,11 +57,83 @@ This section shows the basic functionality of how to perform machine learning wi
 library(caret.ts)
 ```
 
-### Quick demonstration
+The examples below how to insert the models inside the `train()` function from **caret**. Additionally, this package also implements an additional variant of the `train()` function that accepts time series objects.
 
-This simple example shows how 
+### ARMA model
 
+Auto-regressive moving-average (ARMA) models can be faciliated both with and without exogeneous variables. By using `arma_model(p, q)`, one can construct an ARMA model of a fixed, pre-defined order. Alternatively, one can let the `train()` function pick the order that fits the training data best. For the latter purpose, use `auto_arma_model()` (with optional arguments for the maximum order).
 
+Example without exogenous variables:
+
+```{r}
+
+```
+
+Example with exogenous variables:
+
+```{r}
+
+```
+
+Predictions and testing:
+
+### ARIMA model
+
+Auto-regressive moving-average models with differneces (ARIMA) also support exogeneous variables if desired. By using `arima_model(p, d, q)`, one can construct an ARIMA model of a fixed, pre-defined order:
+
+* `p`: Order of auto-regressive (AR) terms
+
+* `d`: Degree of differencing
+
+* `q`: Order of moving-average (MA) terms
+
+Alternatively, one can let the `train()` function pick the order that fits the training data best. For the latter purpose, use `auto_arima_model()` (with optional arguments for the maximum order).
+
+Example without exogenous variables:
+
+```{r, echo=c(-1, -4)}
+library(forecast)
+
+data(WWWusage) # from package "forecast"
+df <- data.frame(y = as.numeric(WWWusage))
+
+library(caret)
+
+arima1 <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
+summary(arima1)
+RMSE(predict(arima1, df), df) # in-sample RMSE
+
+arima2 <- train(y ~ 1, data = df, method = arima_model(1, 2, 1), trControl = trainDirectFit())
+summary(arima2)
+RMSE(predict(arima2, df), df) # in-sample RMSE
+
+auto_arima <- train(y ~ 1, data = df, method = auto_arima_model(), trControl = trainDirectFit())
+summary(arima)
+arimaorder(arima$finalModel) # order of best model
+RMSE(predict(arima, df), df) # in-sample RMSE
+```
+
+Example with exogenous variables:
+
+```{r}
+
+```
+
+Predictions and testing:
+
+### Alternative interface for training with time series objects
+
+`trainDirectFit()`
+
+```{r}
+class(WWWusage)
+str(WWWusage)
+
+arima <- train(WWWusage, method = auto_arima_model(), trControl = trainDirectFit())
+summary(arima)
+arimaorder(arima$finalModel) # order of best model
+RMSE(predict(arima, df), df) # in-sample RMSE
+```
 
 ## License
 
