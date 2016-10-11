@@ -99,17 +99,32 @@ df <- data.frame(y = as.numeric(WWWusage))
 
 library(caret)
 
+# ARIMA model of order (1, 1, 1)
+
 arima1 <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
+
 summary(arima1)
+
+predict(arima1, df) # in-sample predictions
 RMSE(predict(arima1, df), df) # in-sample RMSE
 
+# ARIMA model of order (1, 2, 1)
+
 arima2 <- train(y ~ 1, data = df, method = arima_model(1, 2, 1), trControl = trainDirectFit())
+
 summary(arima2)
+
+predict(arima2, df) # in-sample predictions
 RMSE(predict(arima2, df), df) # in-sample RMSE
 
+# Auto-tuned ARIMA model
+
 auto_arima <- train(y ~ 1, data = df, method = auto_arima_model(), trControl = trainDirectFit())
+
 summary(arima)
 arimaorder(arima$finalModel) # order of best model
+
+predict(arima, df) # in-sample predictions
 RMSE(predict(arima, df), df) # in-sample RMSE
 ```
 
@@ -125,15 +140,57 @@ Predictions and testing:
 
 `trainDirectFit()`
 
+This package automatically extends the `train()` function to successfully work with time series objects of class `ts`.
+
+Example with uni-variate time series:
+
 ```{r}
 class(WWWusage)
 str(WWWusage)
 
+# Example with uni-variate time series and no predictors
+
 arima <- train(WWWusage, method = auto_arima_model(), trControl = trainDirectFit())
+
 summary(arima)
 arimaorder(arima$finalModel) # order of best model
-RMSE(predict(arima, df), df) # in-sample RMSE
+
+predict(arima, WWWusage) # in-sample RMSE
+RMSE(predict(arima, df), WWWusage) # in-sample RMSE
 ```
+
+Example for time series with exogenous predictors:
+
+```{r}
+library(vars)
+data(Canada)
+
+class(Canada)
+str(Canada)
+
+# Variant with explicit x and y
+
+arima <- train(x = Canada[, -2], y = Canada[, 2], 
+               method = auto_arima_model(), trControl = trainDirectFit())
+
+summary(arima)
+arimaorder(arima$finalModel) # order of best model
+
+predict(arima, Canada[, -2]) # in-sample predictions
+RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
+
+# Variant with formula
+
+arima <- train(form = prod ~ ., data = Canada, 
+               method = auto_arima_model(), trControl = trainDirectFit())
+
+summary(arima)
+arimaorder(arima$finalModel) # order of best model
+
+predict(arima, Canada) # in-sample predictions
+RMSE(predict(arima, Canada), Canada) # in-sample RMSE
+```
+
 
 ## License
 

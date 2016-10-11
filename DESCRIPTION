@@ -18,7 +18,8 @@ Depends:
     R (>= 2.10),
     caret
 Imports: 
-    forecast
+    forecast,
+    vars
 Suggests: 
     testthat,
     knitr,
