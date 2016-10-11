@@ -1,6 +1,7 @@
 library(caret.ts)
 context("ARIMA models")
 
+library(caret)
 library(forecast)
 
 test_that("ARIMA models is created correctly", {
@@ -22,8 +23,8 @@ test_that("ARIMA models is created correctly", {
   df <- data.frame(y = as.numeric(WWWusage))
   
   arima <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
-  expect_equal(arimaorder(arima), c(1, 1, 1))
+  expect_equal(arimaorder(arima$finalModel), c(1, 1, 1))
   
   arima <- train(y ~ 1, data = df, method = auto_arima_model(3, 2, 3), trControl = trainDirectFit())
-  expect_equal(arimaorder(arima), c(1, 1, 1))
+  expect_equal(arimaorder(arima$finalModel), c(1, 1, 1))
 })
