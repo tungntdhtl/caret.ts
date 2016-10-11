@@ -44,9 +44,10 @@ train.ts <- function(x, ...) {
   if ("y" %in% names(list(...)) && class(list(...)[["y"]]) == "ts") {
     inputArgs <- list(...)
     inputArgs[["y"]] <- coredata(inputArgs[["y"]])
+    
+    return(do.call(caret::train, c(list(x = x), inputArgs)))
   } else { 
-    inputArgs <- list(...)  
+    df <- data.frame(dependent = coredata(x))
+    return(caret::train(form = dependent ~ ., data = df, ...))
   }
-  
-  return(do.call(caret::train, c(list(x = x), inputArgs)))
 }
