@@ -37,8 +37,8 @@ Notes:
 
 -   A CRAN version has not yet been released.
 
-Usage
------
+Usage of models
+---------------
 
 This section shows the basic functionality of how to perform machine learning with time seris models inside **caret**. First, load the corresponding package **caret.ts**.
 
@@ -340,6 +340,67 @@ predict(arima, Canada[, -2]) # in-sample predictions
 RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
 #> [1] 2.297104
 ```
+
+### ETS
+
+`ets_model()` integrates a so-called exponential smoothing state space (ETS) model.
+
+``` r
+data_train <- WWWusage[1:80]
+data_test <- WWWusage[81:100]
+ 
+lm <- train(data_train, method = "lm", trControl = trainDirectFit())
+summary(lm)
+#> 
+#> Call:
+#> lm(formula = .outcome ~ ., data = dat)
+#> 
+#> Residuals:
+#>    Min     1Q Median     3Q    Max 
+#> -41.80 -33.80   6.20  23.45  50.20 
+#> 
+#> Coefficients:
+#>             Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)  124.800      3.491   35.75   <2e-16 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 31.23 on 79 degrees of freedom
+RMSE(predict(lm, data_test), data_test)
+#> [1] 69.44221
+ 
+ets <- train(data_train, method = ets_model(), trControl = trainDirectFit())
+summary(ets)
+#> ETS(A,Ad,N) 
+#> 
+#> Call:
+#>  forecast::ets(y = y, model = param$model) 
+#> 
+#>   Smoothing parameters:
+#>     alpha = 0.997 
+#>     beta  = 0.9953 
+#>     phi   = 0.8306 
+#> 
+#>   Initial states:
+#>     l = 86.8768 
+#>     b = -2.285 
+#> 
+#>   sigma:  3.4236
+#> 
+#>      AIC     AICc      BIC 
+#> 557.4736 558.2844 569.3837 
+#> 
+#> Training set error measures:
+#>                     ME     RMSE      MAE       MPE     MAPE      MASE
+#> Training set 0.1668264 3.423614 2.747002 0.2594915 2.335131 0.6739539
+#>                   ACF1
+#> Training set 0.1734724
+RMSE(predict(ets, data_test), data_test)
+#> [1] 48.39074
+```
+
+Evaluation
+----------
 
 ### Alternative interface for training with time series objects
 

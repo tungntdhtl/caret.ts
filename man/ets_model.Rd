@@ -33,10 +33,10 @@ data_test <- WWWusage[81:100]
 
 lm <- train(data_train, method = "lm", trControl = trainDirectFit())
 summary(lm)
-RMSE(predict(lm, numeric(20)), data_test)
+RMSE(predict(lm, data_test), data_test)
 
 ets <- train(data_train, method = ets_model(), trControl = trainDirectFit())
 summary(ets)
-RMSE(predict(ets, numeric(20)), data_test)
+RMSE(predict(ets, data_test), data_test)
 }
 

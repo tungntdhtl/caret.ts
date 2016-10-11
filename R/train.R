@@ -51,3 +51,40 @@ train.ts <- function(x, ...) {
     return(caret::train(y = x, x = matrix(NA, nrow = length(x), ncol = 0), ...))
   }
 }
+
+#' Train function to support single vector
+#' 
+#' Extends the \code{\link[caret]{train}} function from the "caret" package to support
+#' a single vector representing a time series. 
+#' @param x Object of class \code{numeric} in one dimension.
+#' @param ... Further arguments passed on to \code{\link[caret]{train}} for training.
+#' @return Trained model.
+#' @examples 
+#' library(caret)
+#' 
+#' library(forecast)
+#' data(WWWusage)
+#' 
+#' data_train <- WWWusage[1:80]
+#' data_test <- WWWusage[81:100]
+#' 
+#' lm <- train(data_train, method = "lm", trControl = trainDirectFit())
+#' summary(lm)
+#' RMSE(predict(lm, data_test), data_test)
+#' @importFrom caret train
+#' @export
+train.numeric <- function(x, ...) {
+  if (is.vector(x)) {
+    if ("y" %in% names(list(...)) && class(list(...)[["y"]]) == "ts") {
+      inputArgs <- list(...)
+      inputArgs[["y"]] <- zoo::coredata(inputArgs[["y"]])
+      
+      return(do.call(caret::train, c(list(x = x), inputArgs)))
+    } else { 
+      df <- data.frame(dependent = x)
+      return(caret::train(y = x, x = matrix(NA, nrow = length(x), ncol = 0), ...))
+    }
+  } else {
+    return(caret::train.default(x = x, ...))
+  }
+}

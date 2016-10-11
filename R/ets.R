@@ -55,7 +55,9 @@ ets_sort <- function(x) {
 #' \code{"ZZZ"} which performs auto-fitting.
 #' @param ... Further arguments used when fitting ETS model.
 #' @return Model definition that can then be insered into \code{\link[caret]{train}}.
-#' @note ETS model does not support exogenous variables.
+#' @note ETS model does not support exogenous variables. Yet, we need to supply some 
+#' sample data when making predictions in order to work with caret. However, these 
+#' values are ignored.
 #' @examples 
 #' library(caret)
 #' 
