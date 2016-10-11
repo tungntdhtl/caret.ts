@@ -40,9 +40,17 @@ auto_arima_fit <- function(...) {
 
 #' @importFrom stats predict
 arima_predict <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
-  pred <- predict(modelFit, n.ahead = 1, newxreg = newdata)
+  if ("ts" %in% class(newdata)) {
+    newdata <- coredata(newdata)
+  }
   
-  return(as.numeric(pred$pred))
+  if (ncol(newdata) == 0) {
+    pred <- forecast(modelFit, h = nrow(newdata))
+  } else {
+    pred <- forecast(modelFit, xreg = newdata)
+  }
+  
+  return(as.numeric(pred$mean))
 }
 
 arima_sort <- function(x) {
@@ -117,9 +125,11 @@ arima_model <- function(p, d, q, intercept = TRUE, ...) {
 #' 
 #' lm <- train(y ~ 1, data = df, method = "lm", trControl = trainDirectFit())
 #' summary(lm)
+#' RMSE(predict(lm, df), df)
 #' 
-#' arima <- train(y ~ 1, data = df, method = auto_arima_model(5, 5, 5), trControl = trainDirectFit())
+#' arima <- train(y ~ 1, data = df, method = auto_arima_model(), trControl = trainDirectFit())
 #' summary(arima)
+#' RMSE(predict(arima, df), df)
 #' @export
 auto_arima_model <- function(p = 5, d = 2, q = 5, intercept = TRUE, ...) {
   return(list(label = "ARIMA",
