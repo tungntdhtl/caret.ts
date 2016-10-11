@@ -19,7 +19,8 @@ Depends:
     caret
 Imports: 
     forecast,
-    vars
+    vars,
+    zoo
 Suggests: 
     testthat,
     knitr,

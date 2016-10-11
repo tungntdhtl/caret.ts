@@ -41,13 +41,13 @@ auto_arima_fit <- function(...) {
 #' @importFrom stats predict
 arima_predict <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
   if ("ts" %in% class(newdata)) {
-    newdata <- coredata(newdata)
+    newdata <- zoo::coredata(newdata)
   }
   
   if (ncol(newdata) == 0) {
-    pred <- forecast(modelFit, h = nrow(newdata))
+    pred <- forecast::forecast(modelFit, h = nrow(newdata))
   } else {
-    pred <- forecast(modelFit, xreg = newdata)
+    pred <- forecast::forecast(modelFit, xreg = newdata)
   }
   
   return(as.numeric(pred$mean))

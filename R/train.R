@@ -13,11 +13,11 @@
 #' 
 #' class(WWWusage)
 #' str(WWWusage)
-
+#'
 #' arima <- train(WWWusage, method = auto_arima_model(), trControl = trainDirectFit())
 #' summary(arima)
 #' arimaorder(arima$finalModel) # order of best model
-#' RMSE(predict(arima, df), df) # in-sample RMSE
+#' RMSE(predict(arima, WWWusage), WWWusage) # in-sample RMSE
 #' 
 #' library(vars)
 #' data(Canada)
@@ -29,25 +29,25 @@
 #'                method = auto_arima_model(), trControl = trainDirectFit())
 #' summary(arima)
 #' arimaorder(arima$finalModel) # order of best model
-#' RMSE(predict(arima, df), df) # in-sample RMSE
+#' RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
 #' 
 #' arima <- train(form = prod ~ ., data = Canada, 
 #'                method = auto_arima_model(), trControl = trainDirectFit())
 #' summary(arima)
 #' arimaorder(arima$finalModel) # order of best model
-#' RMSE(predict(arima, df), df) # in-sample RMSE
+#' RMSE(predict(arima, Canada), Canada[, "prod"]) # in-sample RMSE
 #' @importFrom caret train
 #' @export
 train.ts <- function(x, ...) {
-  x <- coredata(x)
+  x <- zoo::coredata(x)
   
   if ("y" %in% names(list(...)) && class(list(...)[["y"]]) == "ts") {
     inputArgs <- list(...)
-    inputArgs[["y"]] <- coredata(inputArgs[["y"]])
+    inputArgs[["y"]] <- zoo::coredata(inputArgs[["y"]])
     
     return(do.call(caret::train, c(list(x = x), inputArgs)))
   } else { 
-    df <- data.frame(dependent = coredata(x))
+    df <- data.frame(dependent = x)
     return(caret::train(form = dependent ~ ., data = df, ...))
   }
 }
