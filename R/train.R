@@ -16,8 +16,9 @@
 #' summary(arima)
 #' arimaorder(arima$finalModel) # order of best model
 #' RMSE(predict(arima, df), df) # in-sample RMSE
+#' @importFrom caret train
 #' @export
 train.ts <- function(x, ...) {
   df <- data.frame(y = as.numeric(x))
-  return(train(y ~ 1, df, ...))
+  return(caret::train(y ~ 1, df, ...))
 }

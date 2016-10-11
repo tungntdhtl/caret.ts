@@ -15,9 +15,9 @@ License: MIT + file LICENSE
 URL: https://github.com/sfeuerriegel/caret.ts
 BugReports: https://github.com/sfeuerriegel/caret.ts/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    caret
 Imports: 
-    caret,
     forecast
 Suggests: 
     testthat,
