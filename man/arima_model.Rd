@@ -41,12 +41,11 @@ library(caret)
 
 library(forecast)
 data(WWWusage) # from package "forecast"
-df <- data.frame(y = as.numeric(WWWusage))
 
-lm <- train(y ~ 1, data = df, method = "lm", trControl = trainDirectFit())
+lm <- train(WWWusage, method = "lm", trControl = trainDirectFit())
 summary(lm)
 
-arima <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
+arima <- train(WWWusage, method = arima_model(1, 1, 1), trControl = trainDirectFit())
 summary(arima)
 
 # with exogenous variables

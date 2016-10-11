@@ -47,6 +47,9 @@ summary(lm)
 arma <- train(y ~ 1, data = df, method = arma_model(1, 1), trControl = trainDirectFit())
 summary(arma)
 
+predict(arma, df)
+RMSE(predict(arma, df), df)
+
 # with exogenous variables
 
 library(vars)

@@ -341,29 +341,6 @@ RMSE(predict(arima, Canada[, -2]), Canada[, 2]) # in-sample RMSE
 #> [1] 2.297104
 ```
 
-Predictions and testing:
-
-### Variable importance
-
-Variable importance metrics as provided by **caret** are supported accordingly.
-
-**Example:**
-
-``` r
-absCoef <- varImp(arima, scale = FALSE) # variable importance (= absolute value of coefficient)
-absCoef
-#> custom variable importance
-#> 
-#>    Overall
-#> e   0.4457
-#> U   0.2776
-#> rw  0.0342
-
-plot(absCoef)
-```
-
-![](README-varimp-1.png)
-
 ### Alternative interface for training with time series objects
 
 `trainDirectFit()`
@@ -515,6 +492,60 @@ predict(arima, Canada) # in-sample predictions
 RMSE(predict(arima, Canada), Canada[, "prod"]) # in-sample RMSE
 #> [1] 2.297104
 ```
+
+### Plotting of forecasts
+
+``` r
+library(ggplot2)
+
+canada_train <- Canada[1:60, ]
+canada_test <- Canada[61:84, ]
+
+canada_arima <- train(form = prod ~ ., data = canada_train, 
+                      method = auto_arima_model(), trControl = trainDirectFit())
+
+canada_rf <- train(form = prod ~ ., data = canada_train, 
+                      method = "rf")
+#> note: only 2 unique complexity parameters in default grid. Truncating the grid to 2 .
+
+pred_arima <- predict(canada_arima, canada_test)
+pred_rf <- predict(canada_rf, canada_test)
+
+df <- data.frame(n = 1:84, Canada, 
+                 pred_arima = c(rep(NA, 60), pred_arima),
+                 pred_rf = c(rep(NA, 60), pred_rf))
+
+ggplot(df) +
+  geom_line(aes(x = n, y = prod, color = "Actual")) +
+  geom_line(aes(x = n, y = pred_arima, color = "Predicted (ARIMA)")) +
+  geom_line(aes(x = n, y = pred_rf, color = "Predicted (RF)")) +
+  geom_vline(xintercept = 60) +
+  scale_color_manual("Time series", values = c("Actual" = "darkblue", "Predicted (ARIMA)" = "darkred", "Predicted (RF)" = "darkgray")) +
+  theme_bw()
+```
+
+![](README-plot_forecast-1.png)
+
+### Variable importance
+
+Variable importance metrics as provided by **caret** are supported accordingly.
+
+**Example:**
+
+``` r
+absCoef <- varImp(arima, scale = FALSE) # variable importance (= absolute value of coefficient)
+absCoef
+#> custom variable importance
+#> 
+#>    Overall
+#> e   0.4457
+#> U   0.2776
+#> rw  0.0342
+
+plot(absCoef)
+```
+
+![](README-varimp-1.png)
 
 License
 -------

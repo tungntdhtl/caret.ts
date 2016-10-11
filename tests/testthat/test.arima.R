@@ -19,12 +19,9 @@ test_that("ARIMA models is created correctly", {
   expect_equal(m$parameters$parameter, c("p", "d", "q", "intercept"))
   expect_equal(m$parameters$class, c("integer", "integer", "integer", "logical"))  
   
-  data(WWWusage) # from package "forecast"
-  df <- data.frame(y = as.numeric(WWWusage))
-  
-  arima <- train(as.formula("y ~ 1"), data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
+  arima <- train(WWWusage, method = arima_model(1, 1, 1), trControl = trainDirectFit())
   expect_equal(arimaorder(arima$finalModel), c(1, 1, 1))
   
-  arima <- train(y ~ 1, data = df, method = auto_arima_model(3, 2, 3), trControl = trainDirectFit())
+  arima <- train(WWWusage, method = auto_arima_model(3, 2, 3), trControl = trainDirectFit())
   expect_equal(arimaorder(arima$finalModel), c(1, 1, 1))
 })
