@@ -2,7 +2,9 @@
 
 S3method(train,ts)
 export(arima_model)
+export(arma_model)
 export(auto_arima_model)
+export(auto_arma_model)
 export(trainDirectFit)
 importFrom(caret,train)
 importFrom(stats,predict)

@@ -57,7 +57,7 @@ This section shows the basic functionality of how to perform machine learning wi
 library(caret.ts)
 ```
 
-The examples below how to insert the models inside the `train()` function from **caret**. Additionally, this package also implements an additional variant of the `train()` function that accepts time series objects.
+The examples below how to insert the models inside the `train()` function from **caret**. Additionally, this package also implements an additional variant of the `train()` function that accepts time series objects (see below).
 
 ### ARMA model
 
@@ -65,14 +65,32 @@ Auto-regressive moving-average (ARMA) models can be faciliated both with and wit
 
 **Example without exogenous variables:**
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
+library(forecast)
+data(WWWusage) # from package "forecast"
+df <- data.frame(y = as.numeric(WWWusage))
 
+arma <- train(y ~ 1, data = df, method = arma_model(1, 1), trControl = trainDirectFit())
+summary(arma)
+
+predict(arma, df)
+RMSE(predict(arma, df), df)
 ```
 
 **Example with exogenous variables:**
 
-```{r}
-
+```{r, message=FALSE,warning=FALSE}
+library(vars)
+data(Canada)
+ 
+arma <- train(x = Canada[, -2], y = Canada[, 2], 
+              method = arma_model(2, 0), trControl = trainDirectFit())
+ 
+summary(arma)
+arimaorder(arma$finalModel) # order of best model
+ 
+predict(arma, Canada[, -2]) # in-sample predictions
+RMSE(predict(arma, Canada[, -2]), Canada[, 2]) # in-sample RMSE
 ```
 
 Predictions and testing:

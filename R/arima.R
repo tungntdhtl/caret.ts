@@ -44,7 +44,10 @@ arima_predict <- function(modelFit, newdata, preProc = NULL, submodels = NULL) {
     newdata <- zoo::coredata(newdata)
   }
   
-  if (ncol(newdata) == 0) {
+  if (is.vector(newdata)) { 
+    modelFit <- forecast::Arima(newdata, model = modelFit)
+    pred <- forecast::forecast(modelFit, h = length(newdata)) # , xreg = matrix(newdata, ncol = 1)
+  } else if (ncol(newdata) == 0) {
     pred <- forecast::forecast(modelFit, h = nrow(newdata))
   } else {
     pred <- forecast::forecast(modelFit, xreg = newdata)
@@ -76,7 +79,7 @@ arima_varimp <- function(object, ...) {
 #' If further variables are specified in the model, it also includess exogenous variables. 
 #' The order (p, d, q) is fixed as specified. 
 #' @param p Order of auto-regressive (AR) terms.
-#' @param d Degree of differencing
+#' @param d Degree of differencing.
 #' @param q Order of moving-average (MA) terms.
 #' @param intercept Boolean value whether to include an intercept term (default: 
 #' \code{TRUE}).
@@ -135,7 +138,7 @@ arima_model <- function(p, d, q, intercept = TRUE, ...) {
 
 #' ARIMA model with tuned order
 #' 
-#' Creates an AIRMA model that is then fitted to the data as a univariate time series.
+#' Creates an ARIMA model that is then fitted to the data as a univariate time series.
 #' If further variables are specified in the model, it also includess exogenous variables. 
 #' The order (p, d, q) is tuned by choosing the one with best fit. 
 #' @param p Maximum order of auto-regressive (AR) terms that is tested to find the best 

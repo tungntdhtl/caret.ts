@@ -22,7 +22,7 @@ test_that("ARIMA models is created correctly", {
   data(WWWusage) # from package "forecast"
   df <- data.frame(y = as.numeric(WWWusage))
   
-  arima <- train(y ~ 1, data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
+  arima <- train(as.formula("y ~ 1"), data = df, method = arima_model(1, 1, 1), trControl = trainDirectFit())
   expect_equal(arimaorder(arima$finalModel), c(1, 1, 1))
   
   arima <- train(y ~ 1, data = df, method = auto_arima_model(3, 2, 3), trControl = trainDirectFit())

@@ -48,6 +48,6 @@ train.ts <- function(x, ...) {
     return(do.call(caret::train, c(list(x = x), inputArgs)))
   } else { 
     df <- data.frame(dependent = x)
-    return(caret::train(form = dependent ~ ., data = df, ...))
+    return(caret::train(y = x, x = matrix(NA, nrow = length(x), ncol = 0), ...))
   }
 }

@@ -47,7 +47,7 @@ library(caret.ts)
 #> Warning: package 'caret' was built under R version 3.3.1
 ```
 
-The examples below how to insert the models inside the `train()` function from **caret**. Additionally, this package also implements an additional variant of the `train()` function that accepts time series objects.
+The examples below how to insert the models inside the `train()` function from **caret**. Additionally, this package also implements an additional variant of the `train()` function that accepts time series objects (see below).
 
 ### ARMA model
 
@@ -55,7 +55,95 @@ Auto-regressive moving-average (ARMA) models can be faciliated both with and wit
 
 **Example without exogenous variables:**
 
+``` r
+library(forecast)
+data(WWWusage) # from package "forecast"
+df <- data.frame(y = as.numeric(WWWusage))
+
+arma <- train(y ~ 1, data = df, method = arma_model(1, 1), trControl = trainDirectFit())
+summary(arma)
+#> Series: y 
+#> ARIMA(1,0,1) with non-zero mean 
+#> 
+#> Coefficients:
+#>          ar1     ma1  intercept
+#>       0.9927  0.7984   149.3662
+#> s.e.  0.0089  0.0459    48.4678
+#> 
+#> sigma^2 estimated as 14.78:  log likelihood=-278.24
+#> AIC=564.49   AICc=564.91   BIC=574.91
+#> 
+#> Training set error measures:
+#>                     ME     RMSE      MAE       MPE     MAPE      MASE
+#> Training set 0.6382458 3.786451 3.002197 0.3772227 2.336051 0.6634319
+#>                   ACF1
+#> Training set 0.4253221
+
+predict(arma, df)
+#>   [1] 218.6332 218.1282 217.6269 217.1292 216.6352 216.1448 215.6579
+#>   [8] 215.1746 214.6948 214.2186 213.7458 213.2764 212.8105 212.3479
+#>  [15] 211.8888 211.4329 210.9804 210.5312 210.0853 209.6426 209.2032
+#>  [22] 208.7670 208.3339 207.9040 207.4772 207.0536 206.6330 206.2155
+#>  [29] 205.8010 205.3896 204.9812 204.5757 204.1732 203.7736 203.3770
+#>  [36] 202.9832 202.5923 202.2043 201.8190 201.4366 201.0570 200.6802
+#>  [43] 200.3061 199.9347 199.5660 199.2000 198.8367 198.4760 198.1180
+#>  [50] 197.7626 197.4098 197.0595 196.7118 196.3666 196.0240 195.6838
+#>  [57] 195.3461 195.0109 194.6781 194.3478 194.0198 193.6943 193.3711
+#>  [64] 193.0503 192.7318 192.4157 192.1018 191.7902 191.4810 191.1739
+#>  [71] 190.8691 190.5665 190.2662 189.9680 189.6720 189.3781 189.0864
+#>  [78] 188.7968 188.5094 188.2240 187.9407 187.6595 187.3803 187.1032
+#>  [85] 186.8280 186.5549 186.2838 186.0147 185.7475 185.4822 185.2189
+#>  [92] 184.9575 184.6981 184.4405 184.1848 183.9309 183.6789 183.4288
+#>  [99] 183.1804 182.9339
+RMSE(predict(arma, df), df)
+#> [1] 76.47249
+```
+
 **Example with exogenous variables:**
+
+``` r
+library(vars)
+data(Canada)
+ 
+arma <- train(x = Canada[, -2], y = Canada[, 2], 
+              method = arma_model(2, 0), trControl = trainDirectFit())
+ 
+summary(arma)
+#> Series: y 
+#> ARIMA(2,0,0) with non-zero mean 
+#> 
+#> Coefficients:
+#>          ar1      ar2  intercept       e       rw       U
+#>       1.2225  -0.2815    79.2940  0.3500  -0.0065  0.1671
+#> s.e.  0.1224   0.1197   160.3588  0.1935   0.0668  0.3154
+#> 
+#> sigma^2 estimated as 0.4929:  log likelihood=-87.65
+#> AIC=189.3   AICc=190.78   BIC=206.32
+#> 
+#> Training set error measures:
+#>                       ME      RMSE       MAE          MPE      MAPE
+#> Training set -0.02779965 0.6765253 0.5457459 -0.007232222 0.1339622
+#>                   MASE        ACF1
+#> Training set 0.9330177 -0.02118302
+arimaorder(arma$finalModel) # order of best model
+#> [1] 2 0 0
+ 
+predict(arma, Canada[, -2]) # in-sample predictions
+#>  [1] 406.1969 405.9850 405.8822 406.0181 406.2726 406.3626 406.2504
+#>  [8] 406.0809 405.6873 405.3071 404.9517 404.7529 404.7910 405.0912
+#> [15] 405.4219 405.4222 405.4119 405.5803 405.8142 405.8943 405.9596
+#> [22] 406.2119 406.4319 406.6937 406.9195 407.0858 407.1430 407.2466
+#> [29] 407.4172 407.7343 407.9627 408.2730 408.4922 408.6072 408.6995
+#> [36] 408.9247 409.2462 409.2362 409.3105 409.4712 409.6519 409.6905
+#> [43] 409.6678 409.4946 409.2716 409.3213 409.3386 409.2447 409.1061
+#> [50] 409.1051 409.1448 409.2314 409.2883 409.3843 409.4918 409.5542
+#> [57] 409.5593 409.7962 410.0534 410.2487 410.4162 410.3492 410.4023
+#> [64] 410.4651 410.6028 410.6676 410.7294 410.7802 411.0274 411.2709
+#> [71] 411.5513 411.7147 411.8190 412.0223 412.2784 412.5129 412.6940
+#> [78] 412.9221 413.0893 413.2584 413.5332 413.6623 413.7822 414.0322
+RMSE(predict(arma, Canada[, -2]), Canada[, 2]) # in-sample RMSE
+#> [1] 2.520015
+```
 
 Predictions and testing:
 
