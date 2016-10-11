@@ -91,7 +91,7 @@ Alternatively, one can let the `train()` function pick the order that fits the t
 
 Example without exogenous variables:
 
-```{r, echo=c(-1, -4)}
+```{r, warning=FALSE, message=FALSE}
 library(forecast)
 
 data(WWWusage) # from package "forecast"
@@ -121,11 +121,11 @@ RMSE(predict(arima2, df), df) # in-sample RMSE
 
 auto_arima <- train(y ~ 1, data = df, method = auto_arima_model(), trControl = trainDirectFit())
 
-summary(arima)
-arimaorder(arima$finalModel) # order of best model
+summary(auto_arima)
+arimaorder(auto_arima$finalModel) # order of best model
 
-predict(arima, df) # in-sample predictions
-RMSE(predict(arima, df), df) # in-sample RMSE
+predict(auto_arima, df) # in-sample predictions
+RMSE(predict(auto_arima, df), df) # in-sample RMSE
 ```
 
 Example with exogenous variables:
@@ -156,12 +156,12 @@ summary(arima)
 arimaorder(arima$finalModel) # order of best model
 
 predict(arima, WWWusage) # in-sample RMSE
-RMSE(predict(arima, df), WWWusage) # in-sample RMSE
+RMSE(predict(arima, WWWusage), WWWusage) # in-sample RMSE
 ```
 
 Example for time series with exogenous predictors:
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 library(vars)
 data(Canada)
 
@@ -188,7 +188,7 @@ summary(arima)
 arimaorder(arima$finalModel) # order of best model
 
 predict(arima, Canada) # in-sample predictions
-RMSE(predict(arima, Canada), Canada) # in-sample RMSE
+RMSE(predict(arima, Canada), Canada[, "prod"]) # in-sample RMSE
 ```
 
 
